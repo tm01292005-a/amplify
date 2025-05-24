@@ -22,7 +22,8 @@ npm create amplify@latest
 
 ＜サンドボックス実行＞
 npx ampx sandbox
-
+-- サンドボックス一覧
+npx ampx sandbox secret list
 
 
 
