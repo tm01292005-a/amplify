@@ -1,5 +1,11 @@
-// REST API用のエクスポートやAmplify Gen2のapi, funcは現状利用できません。
-// このファイルは空、もしくはダミーのエクスポートのみとしてください。
+import { a, defineData } from "@aws-amplify/backend";
 
-// ダミーのdataエクスポート（backend.tsのimportエラー回避用）
-export const data = {};
+export const data = defineData({
+  schema: a.schema({
+    Post: a.model({
+      id: a.id(),
+      title: a.string(),
+      content: a.string(),
+    }),
+  }),
+});

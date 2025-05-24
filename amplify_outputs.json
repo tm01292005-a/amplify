@@ -1,16 +1,14 @@
 {
   "auth": {
-    "user_pool_id": "ap-northeast-1_FEmVGl67o",
+    "user_pool_id": "ap-northeast-1_SjaiQD80q",
     "aws_region": "ap-northeast-1",
-    "user_pool_client_id": "6nns4p7btierj4qo3va6hsd0o8",
-    "identity_pool_id": "ap-northeast-1:7fdcb38f-d9a4-4a1a-bcc7-02d90b78ebac",
+    "user_pool_client_id": "235bmnp7penajch0fadtb5r6ov",
+    "identity_pool_id": "ap-northeast-1:9ddd39e0-23ce-49fb-99ef-9dd7b14d5489",
     "mfa_methods": [],
     "standard_required_attributes": [
       "email"
     ],
-    "username_attributes": [
-      "email"
-    ],
+    "username_attributes": [],
     "user_verification_types": [
       "email"
     ],
@@ -25,5 +23,8 @@
     },
     "unauthenticated_identities_enabled": true
   },
-  "version": "1.4"
+  "version": "1.4",
+  "custom": {
+    "invokeBedrockFunctionName": "amplify-amplify-tm012-san-mysqlHandlerlambdaA819B4-Fl9Lhp0T6aSz"
+  }
 }
