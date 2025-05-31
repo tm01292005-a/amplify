@@ -24,7 +24,6 @@ paths:
         type: aws_proxy
         payloadFormatVersion: "1.0"
       security:
-        - CognitoAuthorizer: []
     options:
       summary: CORS support
       responses:
@@ -77,7 +76,6 @@ paths:
         httpMethod: POST
         type: aws_proxy
       security:
-        - CognitoAuthorizer: []
     options:
       summary: CORS support
       responses:
@@ -130,7 +128,6 @@ paths:
         httpMethod: POST
         type: aws_proxy
       security:
-        - CognitoAuthorizer: []
     options:
       summary: CORS support
       responses:
@@ -158,17 +155,8 @@ paths:
               method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
 security:
-  - CognitoAuthorizer: []
 components:
   securitySchemes:
-    CognitoAuthorizer:
-      type: apiKey
-      name: Authorization
-      in: header
-      x-amazon-apigateway-authorizer:
-        type: cognito_user_pools
-        providerARNs:
-          - arn:aws:cognito-idp:ap-northeast-1:718101782941:userpool/ap-northeast-1_uBkpIV0Bb
   schemas:
     SampleRequest:
       type: object
