@@ -25,7 +25,32 @@ paths:
         payloadFormatVersion: "1.0"
       security:
         - CognitoAuthorizer: []
-
+    options:
+      summary: CORS support
+      responses:
+        "200":
+          description: CORS support
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
   /sample2:
     get:
       parameters:
@@ -53,7 +78,32 @@ paths:
         type: aws_proxy
       security:
         - CognitoAuthorizer: []
-
+    options:
+      summary: CORS support
+      responses:
+        "200":
+          description: CORS support
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
   /sample3:
     get:
       parameters:
@@ -81,16 +131,42 @@ paths:
         type: aws_proxy
       security:
         - CognitoAuthorizer: []
-
+    options:
+      summary: CORS support
+      responses:
+        "200":
+          description: CORS support
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+security:
+  - CognitoAuthorizer: []
 components:
   securitySchemes:
     CognitoAuthorizer:
       type: apiKey
       name: Authorization
       in: header
-      x-amazon-apigateway-authtype: "cognito_user_pools"
       x-amazon-apigateway-authorizer:
-        type: "cognito_user_pools"
+        type: cognito_user_pools
         providerARNs:
           - arn:aws:cognito-idp:ap-northeast-1:718101782941:userpool/ap-northeast-1_uBkpIV0Bb
   schemas:
