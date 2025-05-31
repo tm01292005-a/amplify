@@ -3,37 +3,10 @@
 // --- API Gateway REST API定義 ---
 resource "aws_api_gateway_rest_api" "api" {
   name = var.api_gateway_name
+  body = file("${path.module}/../docs/openapi/openapi.yaml")
 }
 
-// --- Lambda関数ごとにAPI Gatewayリソースを作成 ---
-resource "aws_api_gateway_resource" "lambda" {
-  for_each   = var.lambda_functions
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
-  path_part   = each.key
-}
-
-// --- Lambda関数ごとにAPI Gatewayメソッドを作成 ---
-resource "aws_api_gateway_method" "lambda" {
-  for_each   = var.lambda_functions
-  rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.lambda[each.key].id
-  http_method   = each.value.method
-  authorization = "NONE"
-}
-
-// --- Lambda関数ごとにAPI Gateway統合設定を作成 ---
-resource "aws_api_gateway_integration" "lambda" {
-  for_each   = var.lambda_functions
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.lambda[each.key].id
-  http_method = aws_api_gateway_method.lambda[each.key].http_method
-  integration_http_method = "POST"
-  type        = "AWS_PROXY"
-  uri         = aws_lambda_function.functions[each.key].invoke_arn
-}
-
-// --- API GatewayからLambdaを呼び出すための権限付与 ---
+// --- Lambda実行権限のみTerraformで管理 ---
 resource "aws_lambda_permission" "apigw_lambda" {
   for_each      = var.lambda_functions
   statement_id  = "AllowAPIGatewayInvoke${each.key}"
@@ -43,11 +16,23 @@ resource "aws_lambda_permission" "apigw_lambda" {
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
 
+// --- Cognitoオーソライザーのリソース追加 ---
+resource "aws_api_gateway_authorizer" "cognito" {
+  name                    = "CognitoAuthorizer"
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  authorizer_uri          = null
+  authorizer_credentials  = null
+  type                    = "COGNITO_USER_POOLS"
+  provider_arns           = ["arn:aws:cognito-idp:ap-northeast-1:718101782941:userpool/ap-northeast-1_uBkpIV0Bb"]
+  identity_source         = "method.request.header.Authorization"
+}
+
 // --- API Gatewayのデプロイメント作成 ---
 resource "aws_api_gateway_deployment" "deployment" {
-  depends_on = [
-    aws_api_gateway_integration.lambda
-  ]
+  depends_on = [aws_api_gateway_rest_api.api]
+  triggers = {
+    redeployment = filesha1("${path.module}/../docs/openapi/openapi.yaml")
+  }
   rest_api_id = aws_api_gateway_rest_api.api.id
 }
 

@@ -1,0 +1,121 @@
+openapi: 3.0.1
+info:
+  title: Sample API
+  version: 1.0.0
+paths:
+  /sample:
+    post:
+      requestBody:
+        description: "This is a sample request body"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SampleRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SampleResponse"
+      x-amazon-apigateway-integration:
+        uri: arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:718101782941:function:sample/invocations
+        httpMethod: POST
+        type: aws_proxy
+        payloadFormatVersion: "1.0"
+      security:
+        - CognitoAuthorizer: []
+
+  /sample2:
+    get:
+      parameters:
+        - in: query
+          name: key1
+          schema:
+            type: string
+          description: "This is a sample query parameter"
+        - in: query
+          name: key2
+          schema:
+            type: string
+          description: "This is a sample query parameter"
+        - in: query
+          name: key3
+          schema:
+            type: string
+          description: "This is a sample query parameter"
+      responses:
+        "200":
+          description: OK
+      x-amazon-apigateway-integration:
+        uri: arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:718101782941:function:sample2/invocations
+        httpMethod: POST
+        type: aws_proxy
+      security:
+        - CognitoAuthorizer: []
+
+  /sample3:
+    get:
+      parameters:
+        - in: query
+          name: key1
+          schema:
+            type: string
+          description: "This is a sample query parameter"
+        - in: query
+          name: key2
+          schema:
+            type: string
+          description: "This is a sample query parameter"
+        - in: query
+          name: key3
+          schema:
+            type: string
+          description: "This is a sample query parameter"
+      responses:
+        "200":
+          description: OK
+      x-amazon-apigateway-integration:
+        uri: arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:718101782941:function:sample3/invocations
+        httpMethod: POST
+        type: aws_proxy
+      security:
+        - CognitoAuthorizer: []
+
+components:
+  securitySchemes:
+    CognitoAuthorizer:
+      type: apiKey
+      name: Authorization
+      in: header
+      x-amazon-apigateway-authtype: "cognito_user_pools"
+      x-amazon-apigateway-authorizer:
+        type: "cognito_user_pools"
+        providerARNs:
+          - arn:aws:cognito-idp:ap-northeast-1:718101782941:userpool/ap-northeast-1_uBkpIV0Bb
+  schemas:
+    SampleRequest:
+      type: object
+      properties:
+        key1:
+          type: string
+          description: "This is a sample key"
+        key2:
+          type: string
+          description: "This is a sample key"
+        key3:
+          type: string
+          description: "This is a sample key"
+    SampleResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "サンプルレスポンスメッセージ"
+        result:
+          type: object
+          description: "サンプルの結果データ"
+          properties:
+            value:
+              type: string
+              description: "サンプル値"
