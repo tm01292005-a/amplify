@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  SampleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: ./sample/
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /sample
+            Method: post
+  Sample2Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: ./sample2/dist
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /sample2
+            Method: get
+  Sample3Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: ./sample3/dist
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /sample3
+            Method: get

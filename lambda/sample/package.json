@@ -1,0 +1,14 @@
+{
+  "name": "sample1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.mjs",
+  "scripts": {
+    "prebuild": "rm -rf dist/",
+    "build": "mkdir -p dist && cp index.mjs dist/index.mjs",
+    "postbuild": "cd dist && zip -r index.zip index.mjs*"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}

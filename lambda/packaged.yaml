@@ -1,0 +1,32 @@
+# samでデプロイする用
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  SampleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: s3://lambda-buket123/6efd4771c42b8ff5341879d5a0f3c328
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /sample
+            Method: post
+    Metadata:
+      SamResourceId: SampleFunction
+  Sample2Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: s3://lambda-buket123/85f95cd33b1cc8f0bbe415a780e0a701
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /sample3
+            Method: get
+    Metadata:
+      SamResourceId: Sample2Function
