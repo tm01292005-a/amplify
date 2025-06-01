@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { signIn, signOut } from "aws-amplify/auth";
+import {
+  CognitoIdentityProviderClient,
+  InitiateAuthCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 import AcmeLogo from "@/app/ui/acme-logo"; // ロゴコンポーネント例
 import { AtSymbolIcon, KeyIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
@@ -16,14 +19,31 @@ export default function LoginForm() {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
     const formData = new FormData(form);
-    const email = formData.get("email") as string;
+    // email -> username に名称変更
+    const username = formData.get("email") as string;
     const password = formData.get("password") as string;
 
     try {
-      // すでにサインイン済みの場合はサインアウト
-      await signOut();
-      await signIn({ username: email, password });
-      router.push("/dashboard"); // サインイン成功時に遷移
+      // Cognitoでユーザー名ログイン
+      const client = new CognitoIdentityProviderClient({
+        region: "ap-northeast-1",
+      });
+      const command = new InitiateAuthCommand({
+        AuthFlow: "USER_PASSWORD_AUTH",
+        ClientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID!,
+        AuthParameters: {
+          USERNAME: username,
+          PASSWORD: password,
+        },
+      });
+      const response = await client.send(command);
+      if (response.AuthenticationResult?.IdToken) {
+        // idTokenをlocalStorageに保存
+        localStorage.setItem("idToken", response.AuthenticationResult.IdToken);
+        router.push("/dashboard");
+      } else {
+        setError("認証に失敗しました");
+      }
     } catch (err) {
       console.log(err);
       if (err instanceof Error) {
@@ -46,15 +66,14 @@ export default function LoginForm() {
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
               htmlFor="email"
             >
-              ユーザー名(Email)
+              ユーザー名
             </label>
             <div className="relative">
               <input
                 className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="email"
-                type="email"
+                type="text"
                 name="email"
-                // placeholder="Enter your email address"
                 required
               />
               <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />

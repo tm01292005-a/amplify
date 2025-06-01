@@ -87,7 +87,7 @@ export class LambdaStack extends cdk.Stack {
         );
 
         // Lambda関数の作成
-        new lambda.Function(this, `${functionName}Function`, {
+        const fn = new lambda.Function(this, `${functionName}Function`, {
           functionName: functionName,
           handler: config.handler,
           runtime: lambda.Runtime.NODEJS_18_X,
@@ -95,6 +95,12 @@ export class LambdaStack extends cdk.Stack {
           code: lambda.Code.fromBucket(bucket, zipKey),
           environment: config.env,
           timeout: cdk.Duration.seconds(900),
+        });
+        // API GatewayからのInvoke権限をLambdaに付与
+        fn.addPermission(`${functionName}ApiGatewayInvoke`, {
+          principal: new iam.ServicePrincipal("apigateway.amazonaws.com"),
+          action: "lambda:InvokeFunction",
+          sourceArn: `arn:aws:execute-api:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:*/*/*/${functionName}`,
         });
       } catch (error) {
         console.error(`Error building Lambda function ${functionName}:`, error);
