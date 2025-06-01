@@ -69,8 +69,9 @@ export class LambdaStack extends cdk.Stack {
         fs.writeFileSync(path.join(distDir, "index.zip.base64sha256"), hash);
 
         // S3へのアップロード
+        const zipKey = `${functionName}/index-${hash}.zip`;
         execSync(
-          `aws s3 cp ${zipPath} s3://${appConfig.s3BucketName}/${functionName}/index.zip`,
+          `aws s3 cp ${zipPath} s3://${appConfig.s3BucketName}/${zipKey}`,
           { stdio: "inherit" }
         );
         execSync(
