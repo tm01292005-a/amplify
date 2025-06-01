@@ -61,21 +61,28 @@ export class LambdaStack extends cdk.Stack {
           stdio: "inherit",
         });
 
-        // SHA256ハッシュの計算
-        const hash = execSync(
-          `openssl dgst -sha256 -binary ${zipPath} | openssl enc -base64 | tr -d '\n'`,
-          { encoding: "utf-8" }
+        // 日時文字列の生成（YYYYMMDDHHmmss）
+        const now = new Date();
+        const pad = (n: number) => n.toString().padStart(2, "0");
+        const datetime = `${now.getFullYear()}${pad(
+          now.getMonth() + 1
+        )}${pad(now.getDate())}${pad(now.getHours())}${pad(
+          now.getMinutes()
+        )}${pad(now.getSeconds())}`;
+        fs.writeFileSync(
+          path.join(distDir, "index.zip.base64sha256"),
+          datetime
         );
-        fs.writeFileSync(path.join(distDir, "index.zip.base64sha256"), hash);
 
         // S3へのアップロード
-        const zipKey = `${functionName}/index-${hash}.zip`;
+        const zipKey = `${functionName}/index-${datetime}.zip`;
+        const zipBase64Key = `${functionName}/index-${datetime}.zip.base64sha256`;
         execSync(
           `aws s3 cp ${zipPath} s3://${appConfig.s3BucketName}/${zipKey}`,
           { stdio: "inherit" }
         );
         execSync(
-          `aws s3 cp ${path.join(distDir, "index.zip.base64sha256")} s3://${appConfig.s3BucketName}/${functionName}/index.zip.base64sha256.txt --content-type 'text/plain'`,
+          `aws s3 cp ${path.join(distDir, "index.zip.base64sha256")} s3://${appConfig.s3BucketName}/${zipBase64Key}.txt --content-type 'text/plain'`,
           { stdio: "inherit" }
         );
 
@@ -85,7 +92,7 @@ export class LambdaStack extends cdk.Stack {
           handler: config.handler,
           runtime: lambda.Runtime.NODEJS_18_X,
           role: lambdaRole,
-          code: lambda.Code.fromBucket(bucket, `${functionName}/index.zip`),
+          code: lambda.Code.fromBucket(bucket, zipKey),
           environment: config.env,
           timeout: cdk.Duration.seconds(900),
         });

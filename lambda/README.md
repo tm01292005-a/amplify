@@ -2,6 +2,9 @@
 ### 事前準備
 - wsl2をインストール
 - wsl2上にDockerをインストール
+- wsl2上にnodeJS 20.xをインストール
+  - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+  - sudo apt-get install -y nodejs
 - wsl2上にaws cliをインストール
   - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
   - unzip awscliv2.zip
