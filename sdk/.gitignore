@@ -1,0 +1,3 @@
+cdk.out
+lib/*.js
+lib/*.d.ts

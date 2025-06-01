@@ -54,7 +54,12 @@
 #### 事前準備
 - S3バケット(terraform管理 兼 Lambdaデプロイ用)
 
-#### 手順(terraformでビルド・デプロイする手順)
+#### 手順(aws sdkでビルド・デプロイする手順)
+- cd cdk
+- npm run build
+- npm run deploy
+
+#### 旧手順(terraformでビルド・デプロイする手順)
 - cd terraform
 - terraform init
   - 初回のみ実施
