@@ -40,14 +40,14 @@ jobs:
 
       - name: Install dependencies (sdk)
         run: npm install
-        working-directory: ../sdk
+        working-directory: sdk
 
       - name: Build TypeScript (sdk)
         run: npm run build
-        working-directory: ../sdk
+        working-directory: sdk
 
       - name: CDK Deploy
         run: npm run deploy
-        working-directory: ../sdk
+        working-directory: sdk
         env:
           AWS_REGION: ap-northeast-1
