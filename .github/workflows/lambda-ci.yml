@@ -1,0 +1,53 @@
+name: Lambda CI
+
+on:
+  push:
+    paths:
+      - "lambda/**"
+      - "cdk/**"
+      - ".github/workflows/lambda-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lambda
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+
+      - name: Install AWS SAM CLI
+        run: |
+          pip install --upgrade pip
+          pip install aws-sam-cli
+
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk
+
+      - name: Install dependencies (sdk)
+        run: npm install
+        working-directory: ../sdk
+
+      - name: Build TypeScript (sdk)
+        run: npm run build
+        working-directory: ../sdk
+
+      - name: CDK Deploy
+        run: npm run deploy
+        working-directory: ../sdk
+        env:
+          AWS_REGION: ap-northeast-1
