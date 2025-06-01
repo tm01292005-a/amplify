@@ -9,7 +9,7 @@ export const handler = async (
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: "Hello from Lambda21!",
+      message: "Hello from Lambda2!",
       event,
       query: event.queryStringParameters,
     }),
