@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.local_start_api]
+docker_image = "lambda-nodejs22:latest"
+warm_containers = "EAGER"
+use_container = true
+force_image_build = true
+invoke_image = "lambda-nodejs22:latest"
+image_repository = "lambda-nodejs22"
+image_tag = "latest" 

@@ -46,6 +46,7 @@
 ###### 2. API Gateway経由でテストする場合(複数のLambdaを起動)
 - cd lambda
 - sam local start-api
+  - (カスタムImageの場合) sam local start-api --invoke-image nodejs22.x:local --skip-pull-image
 
 - 動作確認
   - GETの場合

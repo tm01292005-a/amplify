@@ -1,12 +1,17 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Runtime: nodejs22.x
 Resources:
   SampleFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      Runtime: nodejs18.x
+      Runtime: nodejs22.x
       CodeUri: ./sample/
+      ImageConfig:
+        Command: ["index.handler"]
       Events:
         Api:
           Type: Api
@@ -17,8 +22,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      Runtime: nodejs18.x
+      Runtime: nodejs22.x
       CodeUri: ./sample2/dist
+      ImageConfig:
+        Command: ["index.handler"]
       Events:
         Api:
           Type: Api
@@ -29,8 +36,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      Runtime: nodejs18.x
+      Runtime: nodejs22.x
       CodeUri: ./sample3/dist
+      ImageConfig:
+        Command: ["index.handler"]
       Events:
         Api:
           Type: Api
