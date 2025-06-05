@@ -1,0 +1,355 @@
+---
+############################
+# メタデータ定義
+############################
+Metadata:
+  AWSToolsMetrics:
+    IaC_Generator: "arn:aws:cloudformation:ap-northeast-1:718101782941:generatedTemplate/58440030-2888-4c60-9c13-80a902bd2619"
+  ParameterGroups:
+    - Label:
+        default: "環境パラメータ"
+      Parameters:
+        - EnvironmentName
+        - AWSAccountId
+    - Label:
+        default: "リソース名系パラメータ"
+      Parameters:
+        - LambdaLogGroupName
+        - LambdaRoleName
+        - LambdaS3BucketName
+    - Label:
+        default: "Lambda関連パラメータ"
+      Parameters:
+        - LambdaManagedPolicyName
+    - Label:
+        default: "API Gateway関連パラメータ"
+      Parameters:
+        - ApiGatewayName
+        - ApiKeyName
+        - UsagePlanName
+        - CognitoAuthorizerName
+        - CognitoUserPoolArn
+    - Label:
+        default: "タグ・共通パラメータ"
+      Parameters:
+        - ResourceTag
+
+############################
+# パラメータ定義
+############################
+Parameters:
+  EnvironmentName:
+    Description: "Deployment environment name. Used as a prefix for each resource name."
+    Type: String
+    Default: "stg"
+    AllowedValues:
+      - stg
+      - prod
+  AWSAccountId:
+    Type: String
+    Description: "AWS account ID (12-digit number)"
+    Default: "718101782941"
+  LambdaLogGroupName:
+    Type: String
+    Description: "Lambda log group name"
+    Default: "/aws/lambda/stg-LogGroup"
+  LambdaRoleName:
+    Type: String
+    Description: "IAM role name for Lambda"
+    Default: "stgLambdaRole"
+  LambdaS3BucketName:
+    Type: String
+    Description: "S3 bucket name for Lambda deployment"
+    Default: "stglambdabucket"
+    AllowedPattern: "^[a-z0-9.-]+$"
+    ConstraintDescription: "S3 bucket names must be lowercase letters, numbers, dots, or hyphens. Uppercase letters are not allowed."
+  ResourceTag:
+    Type: String
+    Description: "Common tags to be attached to all created resources (JSON string)"
+    Default: "MyApp"
+  ApiGatewayName:
+    Type: String
+    Description: "API Gateway name"
+    Default: "sample-api"
+  CognitoUserPoolArn:
+    Type: String
+    Description: "Cognito UserPool ARN"
+    Default: "arn:aws:cognito-idp:ap-northeast-1:718101782941:userpool/ap-northeast-1_uBkpIV0Bb"
+  ApiKeyName:
+    Type: String
+    Description: "API key name"
+    Default: "MyApiKey"
+  UsagePlanName:
+    Type: String
+    Description: "UsagePlan name"
+    Default: "MyUsagePlan"
+  CognitoAuthorizerName:
+    Type: String
+    Description: "Cognito authorizer name"
+    Default: "CognitoAuthorizer"
+  LambdaManagedPolicyName:
+    Type: String
+    Description: "IAM managed policy name for Lambda"
+    Default: "AWSLambdaBasicExecutionRole"
+  StageName:
+    Type: String
+    Description: "API Gateway stage name"
+    Default: "default"
+
+############################
+# AWSリソース定義
+############################
+Resources:
+  ############################
+  # S3バケット
+  ############################
+  #  LambdaS3BucketForLambda:
+  #    Type: AWS::S3::Bucket
+  #    Properties:
+  #      BucketName: !Ref LambdaS3BucketName
+  #      BucketEncryption:
+  #        ServerSideEncryptionConfiguration:
+  #          - ServerSideEncryptionByDefault:
+  #              SSEAlgorithm: AES256
+  #      PublicAccessBlockConfiguration:
+  #        BlockPublicAcls: true
+  #        BlockPublicPolicy: true
+  #        IgnorePublicAcls: true
+  #        RestrictPublicBuckets: true
+  #      Tags:
+  #        - Key: Name
+  #          Value: !Sub ${EnvironmentName}-${ResourceTag}
+
+  ############################
+  # IAMロール・ポリシー
+  ############################
+  # Lambda用の基本実行権限マネージドポリシー
+  LambdaExecutionPolicy:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::IAM::ManagedPolicy"
+    DeletionPolicy: "Delete"
+    Properties:
+      ManagedPolicyName: !Ref LambdaManagedPolicyName
+      Path: "/service-role/"
+      Description: "Lambda用の基本実行権限マネージドポリシー"
+      Groups: []
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Resource:
+              Fn::Sub: "arn:aws:ecr:ap-northeast-1:${AWSAccountId}:repository/development"
+            Action:
+              - "ecr:BatchCheckLayerAvailability"
+              - "ecr:CompleteLayerUpload"
+              - "ecr:UploadLayerPart"
+              - "ecr:InitiateLayerUpload"
+              - "ecr:PutImage"
+              - "ecr:DescribeImages"
+            Effect: "Allow"
+            Sid: "sid1"
+          - Resource: "*"
+            Action: "ecr:GetAuthorizationToken"
+            Effect: "Allow"
+            Sid: "sid2"
+          - Resource:
+              Fn::Sub: "arn:aws:logs:ap-northeast-1:${AWSAccountId}:*"
+            Action: "logs:CreateLogGroup"
+            Effect: "Allow"
+          - Resource:
+              - Fn::Sub: "arn:aws:logs:ap-northeast-1:${AWSAccountId}:log-group:/aws/lambda/ImageScan:*"
+            Action:
+              - "logs:CreateLogStream"
+              - "logs:PutLogEvents"
+            Effect: "Allow"
+      Roles:
+        - Ref: LambdaExecutionRole
+      Users: []
+
+  # Lambda実行ロール
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${EnvironmentName}-${LambdaRoleName}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-${ResourceTag}
+
+  ############################
+  # Lambda関数
+  ############################
+  LambdaFunctionForSample:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Lambda::Function"
+    DeletionPolicy: "Delete"
+    Properties:
+      FunctionName: !Sub "${EnvironmentName}-sample"
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref LambdaS3BucketName
+        S3Key: sample/index.zip
+      Runtime: nodejs18.x
+      Timeout: 900
+      Environment:
+        Variables:
+          EXAMPLE_KEY: "example_value"
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-${ResourceTag}
+
+  LambdaFunctionForSample2:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Lambda::Function"
+    DeletionPolicy: "Delete"
+    Properties:
+      FunctionName: !Sub "${EnvironmentName}-sample2"
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref LambdaS3BucketName
+        S3Key: sample2/index.zip
+      Runtime: nodejs18.x
+      Timeout: 900
+      Environment:
+        Variables:
+          EXAMPLE_KEY: "example_value"
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-${ResourceTag}
+
+  LambdaFunctionForSample3:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Lambda::Function"
+    DeletionPolicy: "Delete"
+    Properties:
+      FunctionName: !Sub "${EnvironmentName}-sample3"
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref LambdaS3BucketName
+        S3Key: sample3/index.zip
+      Runtime: nodejs18.x
+      Timeout: 900
+      Environment:
+        Variables:
+          EXAMPLE_KEY: "example_value3"
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-${ResourceTag}
+
+  ############################
+  # API Gateway
+  ############################
+  ApiGatewayRestApi: # API Gateway本体
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Ref ApiGatewayName
+      BodyS3Location:
+        Bucket: !Ref LambdaS3BucketName # 必要に応じてopenapi.yamlを格納するS3バケット名に変更
+        Key: openapi/openapi.yaml # S3内のopenapi.yamlのパスに合わせて修正
+      EndpointConfiguration:
+        Types: [REGIONAL]
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-${ResourceTag}
+
+  ApiGatewayDeployment: # API Gatewayのデプロイメント
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::ApiGateway::Deployment"
+    DeletionPolicy: "Delete"
+    Properties:
+      RestApiId:
+        Ref: "ApiGatewayRestApi"
+      Description: "API Gatewayのデプロイメント"
+
+  ApiGatewayStage: # API Gatewayのステージ
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::ApiGateway::Stage"
+    DeletionPolicy: "Delete"
+    Properties:
+      RestApiId:
+        Ref: "ApiGatewayRestApi"
+      DeploymentId:
+        Fn::GetAtt:
+          - "ApiGatewayDeployment"
+          - "DeploymentId"
+      Description: "API Gatewayのステージ"
+      StageName: !Ref StageName
+      TracingEnabled: false
+      CacheClusterEnabled: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-${ResourceTag}
+
+  ApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn: ApiGatewayStage
+    Properties:
+      Name: !Ref ApiKeyName
+      Description: "API GatewayのAPIキー"
+      Enabled: true
+      StageKeys:
+        - RestApiId: !Ref ApiGatewayRestApi
+          StageName: !Ref StageName
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-${ResourceTag}
+
+  UsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn: ApiGatewayStage
+    Properties:
+      UsagePlanName: !Ref UsagePlanName
+      Description: "API GatewayのUsagePlan"
+      ApiStages:
+        - ApiId: !Ref ApiGatewayRestApi
+          Stage: !Ref StageName
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-${ResourceTag}
+
+  UsagePlanKey: # API GatewayのUsagePlanKey
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref ApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref UsagePlan
+
+  CognitoAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: !Ref CognitoAuthorizerName
+      Type: COGNITO_USER_POOLS
+      RestApiId: !Ref ApiGatewayRestApi
+      IdentitySource: method.request.header.Authorization
+      ProviderARNs:
+        - !Ref CognitoUserPoolArn
+
+  ############################
+  # Output定義
+############################
+Outputs:
+  LambdaExecutionRoleArn: # Lambda実行ロールのARN
+    Description: "Lambda実行ロールのARN"
+    Value: !GetAtt LambdaExecutionRole.Arn
+  LambdaFunctionForSampleArn:
+    Description: "Smaple Lambda関数のARN"
+    Value: !GetAtt LambdaFunctionForSample.Arn
+  LambdaFunctionForSampleName:
+    Description: "Smaple Lambda関数名"
+    Value: !Ref LambdaFunctionForSample
+  ApiGatewayRestApiId: # API Gateway REST APIのID
+    Description: "API Gateway REST APIのID"
+    Value: !Ref ApiGatewayRestApi
+  ApiGatewayStageDefaultInvokeUrl: # API GatewayデフォルトステージのInvoke URL
+    Description: "API GatewayデフォルトステージのInvoke URL"
+    Value: !Sub "https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/"
