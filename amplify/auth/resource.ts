@@ -14,4 +14,8 @@ export const auth = defineAuth({
       required: false,
     },
   },
+  multifactor: {
+    mode: "OFF",
+  },
+  accountRecovery: "EMAIL_ONLY",
 });

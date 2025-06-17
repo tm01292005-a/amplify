@@ -100,14 +100,22 @@ export default function LoginForm() {
             </div>
           </div>
         </div>
-        <div className="mt-4 flex items-center justify-between">
-          <Button
-            type="submit"
-            className="mt-4 w-full bg-transparent border border-black  !bg-black !text-white transition-colors"
-          >
+        <div className="mt-4">
+          <Button className="mt-4 w-full" type="submit">
             ログイン
           </Button>
+          <div className="mt-4 text-center">
+            <Link
+              href="/reset-password"
+              className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              パスワードをお忘れですか？
+            </Link>
+          </div>
         </div>
+        {error && (
+          <div className="mt-4 text-center text-sm text-red-600">{error}</div>
+        )}
         {/* <Authenticator /> ← これを削除 */}
 
         <div className="flex h-8 items-end space-x-1">
