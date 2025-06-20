@@ -9,6 +9,7 @@ import {
 import { Button } from "./button";
 import outputs from "@/amplify_outputs.json";
 import Link from "next/link";
+import { showNotification } from "@mantine/notifications";
 
 const AWS_REGION = outputs.auth.aws_region;
 
@@ -73,6 +74,12 @@ export default function ResetPasswordForm() {
         setStep("verification");
       } else {
         setError("パスワードリセットのリクエストに失敗しました");
+        showNotification({
+          title: "エラー",
+          message: "パスワードリセットのリクエストに失敗しました",
+          color: "red",
+          position: "top-center",
+        });
       }
     } catch (err) {
       console.error("Forgot password error:", err);
@@ -85,25 +92,69 @@ export default function ResetPasswordForm() {
           setError(
             "リクエスト回数が制限を超えました。5分後に再度お試しください。"
           );
+          showNotification({
+            title: "エラー",
+            message:
+              "リクエスト回数が制限を超えました。5分後に再度お試しください。",
+            color: "red",
+            position: "top-center",
+          });
         } else if (
           errorMessage.includes("Username/client id combination not found")
         ) {
           setError(
             "このメールアドレスは登録されていません。サインアップページから新規登録してください。"
           );
+          showNotification({
+            title: "エラー",
+            message:
+              "このメールアドレスは登録されていません。サインアップページから新規登録してください。",
+            color: "red",
+            position: "top-center",
+          });
         } else if (errorMessage.includes("Invalid email address format")) {
           setError("メールアドレスの形式が正しくありません");
+          showNotification({
+            title: "エラー",
+            message: "メールアドレスの形式が正しくありません",
+            color: "red",
+            position: "top-center",
+          });
         } else if (errorMessage.includes("User is disabled")) {
           setError("このアカウントは無効化されています");
+          showNotification({
+            title: "エラー",
+            message: "このアカウントは無効化されています",
+            color: "red",
+            position: "top-center",
+          });
         } else if (errorMessage.includes("Invalid client id")) {
           setError("認証設定に問題があります。管理者にお問い合わせください。");
+          showNotification({
+            title: "エラー",
+            message: "認証設定に問題があります。管理者にお問い合わせください。",
+            color: "red",
+            position: "top-center",
+          });
         } else {
           setError(
             `パスワードリセットのリクエストに失敗しました: ${errorMessage}`
           );
+          showNotification({
+            title: "エラー",
+            message: `パスワードリセットのリクエストに失敗しました: ${errorMessage}`,
+            color: "red",
+            position: "top-center",
+          });
         }
       } else {
         setError("パスワードリセットのリクエストに失敗しました");
+        showNotification({
+          title: "エラー",
+          message: "パスワードリセットのリクエストに失敗しました",
+          color: "red",
+          position: "top-center",
+        });
       }
     } finally {
       setLoading(false);
@@ -142,17 +193,38 @@ export default function ResetPasswordForm() {
         const errorMessage = err.message;
         if (errorMessage.includes("Invalid verification code")) {
           setError("確認コードが正しくありません");
+          showNotification({
+            title: "エラー",
+            message: "確認コードが正しくありません",
+            color: "red",
+          });
         } else if (
           errorMessage.includes("Password did not conform with policy")
         ) {
           setError(
             "パスワードは8文字以上で、大文字・小文字・数字・特殊文字を含める必要があります"
           );
+          showNotification({
+            title: "エラー",
+            message:
+              "パスワードは8文字以上で、大文字・小文字・数字・特殊文字を含める必要があります",
+            color: "red",
+          });
         } else {
           setError(`パスワードのリセットに失敗しました: ${errorMessage}`);
+          showNotification({
+            title: "エラー",
+            message: `パスワードのリセットに失敗しました: ${errorMessage}`,
+            color: "red",
+          });
         }
       } else {
         setError("パスワードのリセットに失敗しました");
+        showNotification({
+          title: "エラー",
+          message: "パスワードのリセットに失敗しました",
+          color: "red",
+        });
       }
     } finally {
       setLoading(false);

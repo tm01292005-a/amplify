@@ -10,6 +10,7 @@ import { AtSymbolIcon, KeyIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./button";
+import { notifications } from "@mantine/notifications";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -43,13 +44,31 @@ export default function LoginForm() {
         router.push("/dashboard");
       } else {
         setError("認証に失敗しました");
+        notifications.show({
+          title: "エラー",
+          message: "認証に失敗しました",
+          color: "red",
+          position: "top-center",
+        });
       }
     } catch (err) {
       console.log(err);
       if (err instanceof Error) {
         setError(err.message || "ログインに失敗しました");
+        notifications.show({
+          title: "エラー",
+          message: "ログインに失敗しました",
+          color: "red",
+          position: "top-center",
+        });
       } else {
         setError("ログインに失敗しました");
+        notifications.show({
+          title: "エラー",
+          message: "ログインに失敗しました",
+          color: "red",
+          position: "top-center",
+        });
       }
     }
   };
