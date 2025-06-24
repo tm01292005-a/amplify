@@ -1,0 +1,41 @@
+{
+    // https://prettier.io/docs/options.html#tab-width
+    "editor.formatOnSave": true, // 保存時にコードを自動フォーマット
+
+    // .js/mjsファイル用Prettier設定
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "prettier.printWidth": 100, // 1行の最大文字数
+        "prettier.tabWidth": 4, // インデント幅
+        "prettier.useTabs": true, // タブでインデント
+        "prettier.semi": true, // セミコロンを付与
+        "prettier.singleQuote": true // シングルクォートを使用
+    },
+    // .tsファイル用Prettier設定
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "prettier.printWidth": 100, // 1行の最大文字数
+        "prettier.tabWidth": 4, // インデント幅
+        "prettier.useTabs": true, // タブでインデント
+        "prettier.semi": true, // セミコロンを付与
+        "prettier.singleQuote": true // シングルクォートを使用
+    },
+    // .jsxファイル用Prettier設定
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode", // Prettierをデフォルトフォーマッタに設定
+        "prettier.printWidth": 100, // 1行の最大文字数
+        "prettier.tabWidth": 4, // インデント幅
+        "prettier.useTabs": true, // タブでインデント
+        "prettier.semi": true, // セミコロンを付与
+        "prettier.singleQuote": true // シングルクォートを使用
+    },
+    // .tsxファイル用Prettier設定
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode", // Prettierをデフォルトフォーマッタに設定
+        "prettier.printWidth": 100, // 1行の最大文字数
+        "prettier.tabWidth": 4, // インデント幅
+        "prettier.useTabs": true, // タブでインデント
+        "prettier.semi": true, // セミコロンを付与
+        "prettier.singleQuote": true // シングルクォートを使用
+    }
+}
