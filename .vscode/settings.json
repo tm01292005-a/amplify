@@ -9,7 +9,7 @@
         "prettier.tabWidth": 4, // インデント幅
         "prettier.useTabs": true, // タブでインデント
         "prettier.semi": true, // セミコロンを付与
-        "prettier.singleQuote": true // シングルクォートを使用
+        "prettier.singleQuote": false // シングルクォートを使用
     },
     // .tsファイル用Prettier設定
     "[typescript]": {
@@ -18,7 +18,7 @@
         "prettier.tabWidth": 4, // インデント幅
         "prettier.useTabs": true, // タブでインデント
         "prettier.semi": true, // セミコロンを付与
-        "prettier.singleQuote": true // シングルクォートを使用
+        "prettier.singleQuote": false // シングルクォートを使用
     },
     // .jsxファイル用Prettier設定
     "[javascriptreact]": {
@@ -27,7 +27,7 @@
         "prettier.tabWidth": 4, // インデント幅
         "prettier.useTabs": true, // タブでインデント
         "prettier.semi": true, // セミコロンを付与
-        "prettier.singleQuote": true // シングルクォートを使用
+        "prettier.singleQuote": false // シングルクォートを使用
     },
     // .tsxファイル用Prettier設定
     "[typescriptreact]": {
@@ -36,6 +36,6 @@
         "prettier.tabWidth": 4, // インデント幅
         "prettier.useTabs": true, // タブでインデント
         "prettier.semi": true, // セミコロンを付与
-        "prettier.singleQuote": true // シングルクォートを使用
+        "prettier.singleQuote": false // シングルクォートを使用
     }
 }
