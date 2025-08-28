@@ -37,5 +37,26 @@
         "prettier.useTabs": true, // タブでインデント
         "prettier.semi": true, // セミコロンを付与
         "prettier.singleQuote": false // シングルクォートを使用
-    }
+    },
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "github.copilot.chat.codeGeneration.instructions": [
+        {
+        "file": ".copilot-codeGeneration-instructions.md"
+        },
+    ],
+    "github.copilot.chat.testGeneration.instructions": [ // テストコード生成の設定です。
+        {
+        "file": ".copilot-test-instructions.md"
+        },
+    ],
+    "github.copilot.chat.reviewSelection.instructions": [ // コードレビューの設定です。
+    {
+        "file": ".copilot-review-instructions.md"
+        },
+    ],
+    "github.copilot.chat.commitMessageGeneration.instructions": [ //コミットメッセージ生成の設定です。
+        {
+        "file": ".copilot-commit-message-instructions.md"
+        },
+    ],
 }
