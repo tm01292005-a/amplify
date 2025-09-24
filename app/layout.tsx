@@ -5,6 +5,7 @@ import { Notifications } from "@mantine/notifications";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/dates/styles.css";
+import "antd/dist/reset.css";
 import "@/app/ui/global.css";
 import { inter } from "@/app/ui/fonts";
 import { Amplify } from "aws-amplify";
