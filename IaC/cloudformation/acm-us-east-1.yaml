@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ACM certificate for apps.test.com (us-east-1). Create DNS validation record manually using outputs.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: apps.test.com
+
+Resources:
+  AppCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      SubjectAlternativeNames:
+        - !Ref DomainName
+      Tags:
+        - Key: Name
+          Value: !Sub "${DomainName}-cert"
+
+Outputs:
+  CertificateArn:
+    Description: ACM certificate ARN (use this in CloudFront stack)
+    Value: !Ref AppCertificate
+
+  ValidationRecordName:
+    Description: DNS record name for manual validation (CNAME)
+    Value: !GetAtt AppCertificate.DomainValidationOptions.0.ResourceRecord.Name
+
+  ValidationRecordType:
+    Description: DNS record type for manual validation
+    Value: !GetAtt AppCertificate.DomainValidationOptions.0.ResourceRecord.Type
+
+  ValidationRecordValue:
+    Description: DNS record value for manual validation
+    Value: !GetAtt AppCertificate.DomainValidationOptions.0.ResourceRecord.Value
