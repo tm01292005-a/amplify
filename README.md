@@ -208,3 +208,41 @@ https://qiita.com/makishy/items/6072d4e8bebea0f1604c
 Task 0020 (README 更新) まで完了。次はメトリクス/ロギング強化 (0021)。
 amplify add api
 
+## CloudFront 署名付き URL (Amplify 環境での運用メモ)
+
+本リポジトリでは CloudFront 経由での署名付き URL をサーバー側で生成し、クライアントへ返す API を用意しています。
+
+実装箇所:
+- `app/api/cloudfront-sign/route.ts` - Secrets Manager から秘密鍵を取得し CloudFront の署名付き URL を返す API
+
+必要な環境変数 / 設定:
+- `CF_PRIVATE_KEY_SECRET_NAME` - Secrets Manager に保存した秘密鍵シークレット名 (秘密鍵は PEM 文字列で保存)
+- `CF_PRIVATE_KEY` - （オプション）Secrets Manager を使わない場合のフォールバック用秘密鍵（本番では非推奨）
+- `CF_KEY_PAIR_ID` - CloudFront に登録した Key Pair ID
+- `AWS_REGION` - Secrets Manager を格納したリージョン
+
+IAM / Amplify 設定:
+- Amplify がデプロイ時/実行時に Secrets Manager から秘密鍵を取得できるよう、実行ロールに以下のようなポリシーを付与してください:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["secretsmanager:GetSecretValue"],
+      "Resource": ["arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:<SECRET_NAME>*"]
+    }
+  ]
+}
+```
+
+使い方（簡単）:
+1. Secrets Manager に秘密鍵（PEM 文字列）を保存。名前を `CF_PRIVATE_KEY_SECRET_NAME` として Amplify の環境変数に設定する。
+2. Amplify コンソールで環境変数 `CF_KEY_PAIR_ID` と `CF_PRIVATE_KEY_SECRET_NAME` を設定。
+3. フロントから `/api/cloudfront-sign` に POST で { url: "https://<distro>.cloudfront.net/path" } を投げると署名付き URL が返る。
+
+注意:
+- 秘密鍵はクライアントに渡さない。サーバー側で署名のみ実行する。  
+- 短期キャッシュ (route.ts 内の CACHE_TTL_MS) を設けて Secrets Manager 呼び出しを節約している。
+- Key のローテーションや期限切れ対応を運用フローに含める。
