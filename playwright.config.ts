@@ -16,6 +16,11 @@ export default defineConfig({
 		screenshot: "only-on-failure",
 		video: "retain-on-failure",
 	},
+	expect: {
+		toHaveScreenshot: {
+			maxDiffPixelRatio: 0.05,
+		},
+	},
 	webServer: {
 		command: "npm run dev",
 		url: "http://localhost:3000",
