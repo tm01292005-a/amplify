@@ -5,24 +5,32 @@ import {
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
-import AcmeLogo from "@/app/ui/acme-logo"; // ロゴコンポーネント例
-import { AtSymbolIcon, KeyIcon } from "@heroicons/react/24/outline";
+import AcmeLogo from "@/app/ui/acme-logo";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Button } from "./button";
 import { notifications } from "@mantine/notifications";
+import {
+  TextInput,
+  PasswordInput,
+  Button,
+  Paper,
+  Stack,
+  Anchor,
+  Text,
+  Box,
+} from "@mantine/core";
+import { IconAt, IconLock } from "@tabler/icons-react";
 
 export default function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.currentTarget as HTMLFormElement;
-    const formData = new FormData(form);
-    // email -> username に名称変更
-    const username = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    setLoading(true);
+    setError("");
 
     try {
       // Cognitoでユーザー名ログイン
@@ -70,90 +78,70 @@ export default function LoginForm() {
           position: "top-center",
         });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form className="space-y-3" onSubmit={handleSubmit}>
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <div className="w-full">
-          <div>
-            <div className="h-20 flex items-center justify-center bg-blue-700">
-              <AcmeLogo />
-            </div>
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="email"
-            >
-              ユーザー名
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="email"
-                type="text"
-                name="email"
-                required
-              />
-              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="password"
-            >
-              パスワード
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="password"
-                type="password"
-                name="password"
-                // placeholder="Enter password"
-                required
-                minLength={6}
-              />
-              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
-        </div>
-        <div className="mt-4">
-          <Button className="mt-4 w-full" type="submit">
+    <form onSubmit={handleSubmit}>
+      <Paper shadow="md" p="xl" radius="md" withBorder>
+        <Stack gap="lg">
+          <Box
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#1c7ed6",
+              height: "80px",
+              borderRadius: "8px",
+            }}
+          >
+            <AcmeLogo />
+          </Box>
+
+          <TextInput
+            label="ユーザー名"
+            id="email"
+            name="email"
+            placeholder="ユーザー名を入力"
+            leftSection={<IconAt size={16} />}
+            required
+            value={username}
+            onChange={(e) => setUsername(e.currentTarget.value)}
+            size="md"
+          />
+
+          <PasswordInput
+            label="パスワード"
+            id="password"
+            name="password"
+            placeholder="パスワードを入力"
+            leftSection={<IconLock size={16} />}
+            required
+            minLength={6}
+            value={password}
+            onChange={(e) => setPassword(e.currentTarget.value)}
+            size="md"
+          />
+
+          <Button type="submit" fullWidth size="md" loading={loading}>
             ログイン
           </Button>
-          <div className="mt-4 text-center">
-            <Link
-              href="/reset-password"
-              className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              パスワードをお忘れですか？
-            </Link>
-          </div>
-        </div>
-        {error && (
-          <div className="mt-4 text-center text-sm text-red-600">{error}</div>
-        )}
-        {/* <Authenticator /> ← これを削除 */}
 
-        <div className="flex h-8 items-end space-x-1">
-          {/* Add form errors here */}
-        </div>
-      </div>
+          <Box style={{ textAlign: "center" }}>
+            <Anchor href="/reset-password" size="sm">
+              パスワードをお忘れですか？
+            </Anchor>
+          </Box>
+
+          {error && (
+            <Text c="red" size="sm" ta="center">
+              {error}
+            </Text>
+          )}
+        </Stack>
+      </Paper>
     </form>
   );
-}
-
-{
-  /*
-      <div className="flex justify-end">
-        <Link
-          href="/signup"
-          className="text-sm text-blue-600 hover:underline font-medium"
-        >
-          アカウントを作成
-        </Link>
-      </div>
-      */
 }

@@ -1,12 +1,29 @@
 import LoginForm from "../ui/login-form";
+import { Container, Title, Center, Box } from "@mantine/core";
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6">
-      <div className="w-full max-w-md bg-white p-8 rounded shadow">
-        <h1 className="text-2xl font-bold mb-6 text-center">サインイン</h1>
+    <Box
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#f8f9fa",
+      }}
+    >
+      <Container size={420} my={40}>
+        <Title
+          ta="center"
+          style={{
+            fontWeight: 900,
+            marginBottom: "2rem",
+          }}
+        >
+          サインイン
+        </Title>
         <LoginForm />
-      </div>
-    </main>
+      </Container>
+    </Box>
   );
 }
