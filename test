@@ -1,14 +1,1 @@
-・認可チェックは関数を分ける
-・パラメーターは固定。なければDBから取ってくる。
-　
-　・ユーザーロール認可…checkAuthorizationUserRole(event);
-　　・event.isUserRoleAdminがtrueならOK
-　・グループ認可……checkAuthorizationGroupRole(event, operationId);
-　　・operationId(グループ作成・削除、ユーザー追加/削除など)に応じて、eventのグループロールをチェック
-　・法人認可…checkAuthorizationOrganization(event, orgUuid);
-　　・event.orgUuidとorg_uuidが一致ならOK
-　・内部認可…checkAuthorizationInternalPermission(event, ranchId, ranchDataTypeIds);
-　　・eventの内部のranchId・ranchDataTypeIdの組み合わせとranchId・ranchDataTypeIdの組み合わせが一致ならOK
-　・有償認可…checkAuthorizationPaidContract(event, ranchDataTypeIds);
-　　・eventの有償のranchDataTypeIdとranchDataTypeIdが一致ならOK
-　　・無償と同じLambdaから呼ばれたらチェックしない。
+
